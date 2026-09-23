@@ -1,0 +1,116 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '' } = Astro.props;
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <div>
+        <span class="text-base font-bold text-slate-100 tracking-tight group-hover:text-emerald-400 transition-colors">
+          AdOps Handbook
+        </span>
+        <span class="hidden sm:inline-block ml-2 text-xs font-mono text-emerald-400/80 bg-emerald-950/60 border border-emerald-800/60 px-1.5 py-0.5 rounded">
+          CORE v1.0
+        </span>
+      </div>
+    </a>
+
+    <!-- Nav Links -->
+    <nav class="hidden md:flex items-center gap-1">
+      <a
+        href="/"
+        class:list={[
+          "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+          currentPath === "/"
+            ? "text-emerald-400 bg-slate-800/80"
+            : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/50"
+        ]}
+      >
+        Главная
+      </a>
+      <a
+        href="/docs/infrastructure/setting-up-clean-fingerprints-antidetect"
+        class:list={[
+          "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+          currentPath.startsWith("/docs")
+            ? "text-emerald-400 bg-slate-800/80"
+            : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/50"
+        ]}
+      >
+        База знаний (Docs)
+      </a>
+      <a
+        href="/tools"
+        class:list={[
+          "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+          currentPath.startsWith("/tools")
+            ? "text-emerald-400 bg-slate-800/80"
+            : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/50"
+        ]}
+      >
+        Инструменты (Tools)
+      </a>
+    </nav>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <a
+        href="/tools/metadata-cleaner"
+        class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition-all shadow-sm shadow-emerald-950"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <span>Metadata Cleaner</span>
+      </a>
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        id="mobile-menu-btn"
+        class="md:hidden p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800"
+        aria-label="Toggle navigation menu"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav dropdown -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate-900 px-4 py-3 space-y-1">
+    <a href="/" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800">
+      Главная
+    </a>
+    <a href="/docs/infrastructure/setting-up-clean-fingerprints-antidetect" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800">
+      База знаний (Docs)
+    </a>
+    <a href="/tools" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800">
+      Инструменты (Tools)
+    </a>
+    <a href="/tools/metadata-cleaner" class="block px-3 py-2 rounded-lg text-sm text-emerald-400 font-semibold hover:bg-slate-800">
+      Очистка метаданных (EXIF Cleaner)
+    </a>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  }
+</script>

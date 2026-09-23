@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tools = [
+  {
+    title: 'EXIF & Metadata Cleaner',
+    description: 'Полное удаление метаданных изображений (EXIF, IPTC, XMP, GPS) на стороне браузера через HTML5 Canvas API.',
+    badge: '100% Client-Side',
+    badgeColor: 'text-emerald-400 bg-emerald-950/60 border-emerald-800/80',
+    link: '/tools/metadata-cleaner',
+    status: 'active',
+    statusLabel: 'Работает',
+    icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+  },
+  {
+    title: 'SubID Macro Builder',
+    description: 'Генератор ссылок с автоматической подстановкой токенов Keitaro, Binom, Voluum и Adspect.',
+    badge: 'In Development',
+    badgeColor: 'text-amber-400 bg-amber-950/60 border-amber-800/80',
+    link: '#',
+    status: 'coming_soon',
+    statusLabel: 'В разработке',
+    icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+  },
+  {
+    title: 'Postback Webhook Tester',
+    description: 'Валидатор HTTP/HTTPS колбэков с проверкой корректности передачи payout, currency и click_id.',
+    badge: 'In Development',
+    badgeColor: 'text-cyan-400 bg-cyan-950/60 border-cyan-800/80',
+    link: '#',
+    status: 'coming_soon',
+    statusLabel: 'В разработке',
+    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+  },
+];
+---
+
+<BaseLayout
+  title="Инструменты арбитража — AdOps Handbook"
+  description="Интерактивные клиентские утилиты для безопасной работы с креативами, метаданными и трекингом."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-10 pb-6 border-b border-slate-800">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-slate-900 border border-slate-800 text-emerald-400 mb-4">
+        <span>AdOps Toolbox</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100">
+        Утилиты для медиабаинга
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base mt-2 max-w-2xl">
+        Все инструменты выполняются исключительно на клиенте (в вашем браузере). Никакие файлы, токены или креативы не передаются на сторонние серверы.
+      </p>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {tools.map((tool) => (
+        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-emerald-400">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={tool.icon} />
+                </svg>
+              </div>
+              <span class:list={["text-[11px] font-mono px-2 py-0.5 rounded border", tool.badgeColor]}>
+                {tool.badge}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-100 mb-2">
+              {tool.title}
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">
+              {tool.description}
+            </p>
+          </div>
+
+          <div>
+            {tool.status === 'active' ? (
+              <a
+                href={tool.link}
+                class="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-4 rounded-lg text-xs transition-colors shadow-sm"
+              >
+                <span>Открыть утилиту</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            ) : (
+              <button
+                disabled
+                class="w-full inline-flex items-center justify-center gap-1.5 bg-slate-800/50 text-slate-500 font-medium py-2 px-4 rounded-lg text-xs cursor-not-allowed border border-slate-800"
+              >
+                <span>Скоро доступно</span>
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

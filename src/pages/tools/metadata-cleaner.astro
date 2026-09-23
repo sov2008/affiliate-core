@@ -1,0 +1,277 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="EXIF & Metadata Cleaner — AdOps Handbook"
+  description="Локальное удаление скрытых метаданных (EXIF, GPS, IPTC, XMP) из изображений через HTML5 Canvas без отправки на сервер."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-2 text-xs font-mono">
+        <a href="/tools" class="text-slate-400 hover:text-slate-200 transition-colors">Утилиты</a>
+        <span class="text-slate-600">/</span>
+        <span class="text-emerald-400 font-semibold">Metadata Cleaner</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-100 flex items-center gap-3">
+        <span>EXIF & Metadata Cleaner</span>
+        <span class="text-xs font-mono font-normal text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2 py-0.5 rounded-full">
+          100% Client-Side
+        </span>
+      </h1>
+
+      <p class="text-slate-400 text-sm mt-2 leading-relaxed">
+        Полное удаление метаданных камеры, серийных номеров, геометок (GPS) и программных маркеров Photoshop/Figma. 
+        Обработка выполняется локально в памяти вашего браузера через виртуальный HTML5 Canvas — пиксели перерисовываются заново, а служебные блоки данных отсекаются.
+      </p>
+    </div>
+
+    <!-- Security Guarantee Alert -->
+    <div class="mb-8 border-l-4 border-emerald-500 bg-emerald-950/20 text-emerald-300 p-4 rounded-r-lg text-xs flex items-start gap-3">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <div>
+        <span class="font-semibold block mb-0.5">Нулевая передача на сервер:</span>
+        Ваши креативы никогда не покидают устройство. Обработка полностью автономна и работает даже при отключенном интернете.
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="space-y-6">
+      
+      <!-- Dropzone -->
+      <div
+        id="dropzone"
+        class="border-2 border-dashed border-slate-700 hover:border-emerald-500/80 bg-slate-900/50 hover:bg-slate-900/80 rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer relative group"
+      >
+        <input
+          type="file"
+          id="file-input"
+          accept="image/png,image/jpeg,image/webp,image/jpg"
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        />
+
+        <div class="flex flex-col items-center justify-center space-y-4 pointer-events-none">
+          <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400 group-hover:text-emerald-400 group-hover:border-emerald-500/50 group-hover:scale-105 transition-all shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+
+          <div>
+            <p class="text-base font-semibold text-slate-200">
+              Перетащите файл сюда или нажмите для выбора
+            </p>
+            <p class="text-xs text-slate-500 mt-1 font-mono">
+              Поддерживаются: PNG, JPG, JPEG, WebP (любое разрешение)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing State / Result Card -->
+      <div id="result-card" class="hidden rounded-xl border border-slate-800 bg-slate-900/80 p-6 space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <h3 id="file-name" class="text-sm font-bold text-slate-200 truncate max-w-xs sm:max-w-md"></h3>
+              <p class="text-xs text-emerald-400 font-mono flex items-center gap-1">
+                <span>●</span> Метаданные (EXIF/GPS/XMP) успешно удалены
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="reset-btn"
+            class="text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-800 transition-colors"
+          >
+            Очистить еще файл
+          </button>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-1">Исходный размер</span>
+            <span id="original-size" class="text-sm font-mono font-semibold text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-1">Очищенный размер</span>
+            <span id="cleaned-size" class="text-sm font-mono font-semibold text-emerald-400">-</span>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-1">Разрешение</span>
+            <span id="image-dimensions" class="text-sm font-mono font-semibold text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-1">Формат</span>
+            <span id="image-format" class="text-sm font-mono font-semibold text-cyan-400">-</span>
+          </div>
+        </div>
+
+        <!-- Preview & Actions -->
+        <div class="flex flex-col sm:flex-row items-center gap-6 pt-2">
+          <div class="w-full sm:w-48 h-32 rounded-lg border border-slate-800 bg-slate-950 overflow-hidden flex items-center justify-center p-1">
+            <img id="preview-img" class="max-w-full max-h-full object-contain rounded" alt="Preview" />
+          </div>
+
+          <div class="flex-1 w-full space-y-3">
+            <a
+              id="download-btn"
+              href="#"
+              download="cleaned-image.jpg"
+              class="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 px-6 rounded-lg text-sm transition-all shadow-lg shadow-emerald-950"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Скачать очищенное изображение</span>
+            </a>
+            <p class="text-[11px] text-slate-500 text-center">
+              Изображение сохранено с неизменным разрешением и качеством пикселей 95%.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function formatBytes(bytes: number, decimals = 1): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input') as HTMLInputElement | null;
+  const resultCard = document.getElementById('result-card');
+  const fileNameEl = document.getElementById('file-name');
+  const originalSizeEl = document.getElementById('original-size');
+  const cleanedSizeEl = document.getElementById('cleaned-size');
+  const dimensionsEl = document.getElementById('image-dimensions');
+  const formatEl = document.getElementById('image-format');
+  const previewImg = document.getElementById('preview-img') as HTMLImageElement | null;
+  const downloadBtn = document.getElementById('download-btn') as HTMLAnchorElement | null;
+  const resetBtn = document.getElementById('reset-btn');
+
+  let currentBlobUrl: string | null = null;
+
+  function cleanImage(file: File) {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Пожалуйста, выберите файл изображения (PNG, JPG или WebP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Virtual canvas redraw: guarantees 100% removal of EXIF, IPTC, XMP, GPS
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          alert('Ошибка инициализации HTML5 Canvas контекста.');
+          return;
+        }
+
+        // Draw fresh pixels (strips all extra streams)
+        ctx.drawImage(img, 0, 0);
+
+        // Determine output MIME type matching source
+        let mimeType = file.type;
+        if (mimeType !== 'image/png' && mimeType !== 'image/webp') {
+          mimeType = 'image/jpeg';
+        }
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              alert('Ошибка создания очищенного файла.');
+              return;
+            }
+
+            if (currentBlobUrl) {
+              URL.revokeObjectURL(currentBlobUrl);
+            }
+            currentBlobUrl = URL.createObjectURL(blob);
+
+            // Update UI elements
+            if (fileNameEl) fileNameEl.textContent = file.name;
+            if (originalSizeEl) originalSizeEl.textContent = formatBytes(file.size);
+            if (cleanedSizeEl) cleanedSizeEl.textContent = formatBytes(blob.size);
+            if (dimensionsEl) dimensionsEl.textContent = `${img.naturalWidth} × ${img.naturalHeight}`;
+            if (formatEl) formatEl.textContent = mimeType.replace('image/', '').toUpperCase();
+            if (previewImg) previewImg.src = currentBlobUrl;
+
+            if (downloadBtn) {
+              downloadBtn.href = currentBlobUrl;
+              const cleanFileName = `clean_${file.name.replace(/\.[^/.]+$/, '')}.${mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg'}`;
+              downloadBtn.download = cleanFileName;
+            }
+
+            // Show card
+            if (dropzone) dropzone.classList.add('hidden');
+            if (resultCard) resultCard.classList.remove('hidden');
+          },
+          mimeType,
+          0.95
+        );
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // File input change
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files[0]) {
+      cleanImage(fileInput.files[0]);
+    }
+  });
+
+  // Drag and drop events
+  ['dragenter', 'dragover'].forEach((eventName) => {
+    dropzone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-emerald-500', 'bg-slate-900/90');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach((eventName) => {
+    dropzone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-emerald-500', 'bg-slate-900/90');
+    });
+  });
+
+  dropzone?.addEventListener('drop', (e) => {
+    if (e.dataTransfer?.files && e.dataTransfer.files[0]) {
+      cleanImage(e.dataTransfer.files[0]);
+    }
+  });
+
+  // Reset button
+  resetBtn?.addEventListener('click', () => {
+    if (fileInput) fileInput.value = '';
+    if (resultCard) resultCard.classList.add('hidden');
+    if (dropzone) dropzone.classList.remove('hidden');
+  });
+</script>

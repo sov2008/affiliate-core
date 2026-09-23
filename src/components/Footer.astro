@@ -1,0 +1,47 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-800/80 bg-slate-950 py-12 text-slate-400 text-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-bold text-slate-200 tracking-tight text-base">AdOps Handbook</span>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+          Инженерный справочник по антифрод-инфраструктуре, трекингу конверсий и траблшутингу для медиабаинговых команд и AdOps-инженеров.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-slate-200 text-sm mb-3">Направления</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/docs/infrastructure/setting-up-clean-fingerprints-antidetect" class="hover:text-emerald-400 transition-colors">Инфраструктура</a></li>
+          <li><a href="/docs/tracking/server-side-postback-tracking" class="hover:text-emerald-400 transition-colors">Трекинг и Postback</a></li>
+          <li><a href="/docs/troubleshooting/diagnosing-postback-loss-and-click-discrepancies" class="hover:text-emerald-400 transition-colors">Траблшутинг</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-slate-200 text-sm mb-3">Утилиты</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/tools/metadata-cleaner" class="hover:text-emerald-400 transition-colors">EXIF / Метаданные Cleaner</a></li>
+          <li><a href="/tools" class="hover:text-emerald-400 transition-colors">Все утилиты</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+      <p>© {year} AdOps Handbook. Вся информация предназначена для технического аудита и тестирования систем.</p>
+      <div class="flex items-center gap-3 mt-3 sm:mt-0 font-mono">
+        <span class="text-slate-600">Astro 4</span>
+        <span class="text-slate-600">•</span>
+        <span class="text-slate-600">Tailwind CSS</span>
+        <span class="text-slate-600">•</span>
+        <span class="text-emerald-500/80">Client-First</span>
+      </div>
+    </div>
+  </div>
+</footer>

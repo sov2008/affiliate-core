@@ -1,0 +1,220 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'docs'>;
+  headings?: Heading[];
+}
+
+const { entry, headings = [] } = Astro.props;
+const currentSlug = entry.slug;
+
+// Load all docs dynamically from content collection
+const allDocs = await getCollection('docs');
+
+// Group docs by category
+const categories = [
+  {
+    id: 'infrastructure',
+    title: 'Инфраструктура (Infrastructure)',
+    icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+    color: 'text-cyan-400 bg-cyan-950/40 border-cyan-800/60',
+  },
+  {
+    id: 'tracking',
+    title: 'Трекинг (Tracking & S2S)',
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60',
+  },
+  {
+    id: 'troubleshooting',
+    title: 'Траблшутинг (Troubleshooting)',
+    icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+    color: 'text-amber-400 bg-amber-950/40 border-amber-800/60',
+  },
+];
+
+const docsByCategory = categories.map((cat) => ({
+  ...cat,
+  docs: allDocs
+    .filter((doc) => doc.data.category === cat.id)
+    .sort((a, b) => (b.data.pubDate > a.data.pubDate ? 1 : -1)),
+}));
+
+// Filter headings for TOC (H2 and H3 only)
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const currentCategory = categories.find((c) => c.id === entry.data.category);
+---
+
+<BaseLayout title={`${entry.data.title} — AdOps Handbook`} description={entry.data.description}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-8">
+    <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+      
+      <!-- Left Sidebar: Document Tree -->
+      <aside class="hidden lg:block lg:col-span-3">
+        <div class="sticky top-24 space-y-6 pr-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Руководства и базы
+            </span>
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/50">
+              {allDocs.length} {allDocs.length === 1 ? 'статья' : 'статьи'}
+            </span>
+          </div>
+
+          <nav class="space-y-6">
+            {docsByCategory.map((category) => (
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={category.icon} />
+                  </svg>
+                  <span>{category.title}</span>
+                </div>
+
+                {category.docs.length > 0 ? (
+                  <ul class="space-y-1 pl-4 border-l border-slate-800/80">
+                    {category.docs.map((doc) => {
+                      const isActive = doc.slug === currentSlug;
+                      return (
+                        <li>
+                          <a
+                            href={`/docs/${doc.slug}`}
+                            class:list={[
+                              "block text-xs py-1.5 px-2 rounded-md transition-all leading-snug",
+                              isActive
+                                ? "text-emerald-400 font-semibold bg-emerald-500/10 border-l-2 border-emerald-500 -ml-[17px] pl-4"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                            ]}
+                          >
+                            {doc.data.title}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p class="text-[11px] text-slate-500 pl-4 italic">В разработке...</p>
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Center: Main Reading Area -->
+      <article class="lg:col-span-6 xl:col-span-7 max-w-none min-w-0">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 font-medium overflow-x-auto">
+          <a href="/" class="hover:text-slate-300 transition-colors">Главная</a>
+          <span>/</span>
+          <a href="/docs/infrastructure/setting-up-clean-fingerprints-antidetect" class="hover:text-slate-300 transition-colors">Документация</a>
+          <span>/</span>
+          <span class="text-slate-400 capitalize">{currentCategory?.title.split(' ')[0]}</span>
+        </nav>
+
+        <!-- Article Header -->
+        <header class="mb-8 pb-6 border-b border-slate-800">
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <span class:list={["text-xs font-medium px-2.5 py-0.5 rounded-full border", currentCategory?.color]}>
+              {currentCategory?.title.split(' ')[0]}
+            </span>
+            <span class="text-xs text-slate-400 font-mono">
+              Обновлено: {entry.data.pubDate}
+            </span>
+            <span class="text-xs text-slate-500">•</span>
+            <span class="text-xs text-slate-400 font-mono">
+              Автор: {entry.data.author}
+            </span>
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-100 mb-4 leading-tight">
+            {entry.data.title}
+          </h1>
+
+          <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+            {entry.data.description}
+          </p>
+
+          <!-- Tags -->
+          {entry.data.tags && entry.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5 mt-4">
+              {entry.data.tags.map((tag: string) => (
+                <span class="text-[11px] font-mono bg-slate-900 text-slate-400 border border-slate-800 px-2 py-0.5 rounded">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </header>
+
+        <!-- Article Body with dark typography styling -->
+        <div class="prose prose-invert prose-slate max-w-none text-slate-300 text-sm sm:text-base leading-relaxed
+          prose-headings:text-slate-100 prose-headings:font-bold prose-headings:tracking-tight
+          prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-slate-800/80
+          prose-h3:text-lg sm:prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+          prose-a:text-emerald-400 hover:prose-a:text-emerald-300 prose-a:no-underline hover:prose-a:underline
+          prose-code:text-emerald-300 prose-code:bg-slate-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-xs sm:prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+          prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl prose-pre:shadow-xl
+          prose-table:border-collapse prose-table:w-full prose-table:text-xs sm:prose-table:text-sm
+          prose-th:bg-slate-900/90 prose-th:text-slate-200 prose-th:p-3 prose-th:border prose-th:border-slate-800 prose-th:font-semibold
+          prose-td:p-3 prose-td:border prose-td:border-slate-800/80 prose-td:text-slate-300
+          prose-hr:border-slate-800 prose-hr:my-8
+          prose-blockquote:border-l-4 prose-blockquote:border-emerald-500 prose-blockquote:bg-emerald-950/20 prose-blockquote:text-slate-300 prose-blockquote:p-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+        ">
+          <slot />
+        </div>
+      </article>
+
+      <!-- Right Sidebar: Table of Contents -->
+      <aside class="hidden xl:block xl:col-span-2">
+        <div class="sticky top-24 pl-4 border-l border-slate-800/60 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+            <span>На этой странице</span>
+          </h4>
+
+          {tocHeadings.length > 0 ? (
+            <ul class="space-y-2 text-xs">
+              {tocHeadings.map((h) => (
+                <li class={h.depth === 3 ? "pl-3 text-slate-400" : ""}>
+                  <a
+                    href={`#${h.slug}`}
+                    class="text-slate-400 hover:text-emerald-400 transition-colors block py-0.5 leading-snug line-clamp-2"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="text-xs text-slate-500 italic">Секции отсутствуют</p>
+          )}
+
+          <div class="mt-8 pt-4 border-t border-slate-800/60">
+            <a
+              href="#top"
+              class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+              <span>Наверх страницы</span>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</BaseLayout>

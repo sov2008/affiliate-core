@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allDocs = await getCollection('docs');
+
+const categories = [
+  {
+    id: 'infrastructure',
+    title: 'Инфраструктура & Прокси',
+    enTitle: 'Infrastructure',
+    description: 'Настройка антидетект-профилей без утечек WebRTC и Canvas, ротация резидентских прокси, фингерпринт-харденинг.',
+    icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+    color: 'from-cyan-500/20 to-blue-500/10 border-cyan-800/60 text-cyan-400',
+    link: '/docs/infrastructure/setting-up-clean-fingerprints-antidetect',
+    count: allDocs.filter((d) => d.data.category === 'infrastructure').length,
+  },
+  {
+    id: 'tracking',
+    title: 'Трекинг & Атрибуция',
+    enTitle: 'Tracking & S2S',
+    description: 'Серверные постбэки (S2S), сквозная передача click_id, обход блокировок трекеров и дедупликация конверсий.',
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-800/60 text-emerald-400',
+    link: '/docs/tracking/server-side-postback-tracking',
+    count: allDocs.filter((d) => d.data.category === 'tracking').length,
+  },
+  {
+    id: 'troubleshooting',
+    title: 'Траблшутинг & Аудит',
+    enTitle: 'Troubleshooting',
+    description: 'Методология расследования потерь кликов, расхождения статистики между источниками и трекерами, отладка вебхуков.',
+    icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+    color: 'from-amber-500/20 to-orange-500/10 border-amber-800/60 text-amber-400',
+    link: '/docs/troubleshooting/diagnosing-postback-loss-and-click-discrepancies',
+    count: allDocs.filter((d) => d.data.category === 'troubleshooting').length,
+  },
+];
+
+// Sort recent docs
+const recentDocs = [...allDocs].sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+---
+
+<BaseLayout>
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden border-b border-slate-800/80 py-16 sm:py-24">
+    <!-- Grid background decoration -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#0f172a15_1px,transparent_1px),linear-gradient(to_bottom,#0f172a15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-slate-900 border border-slate-800 text-emerald-400 mb-6 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>AdOps Technical Core • Handbook 2026</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-100 mb-6 leading-tight">
+          Инженерный справочник <br />
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+            AdOps & Media Buying
+          </span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-400 leading-relaxed mb-8 max-w-2xl">
+          Практические инструкции, проверенные конфигурации антидетект-окружений, отказоустойчивые S2S-постбэки и клиентские инструменты безопасности для арбитражных команд.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <a
+            href="/docs/infrastructure/setting-up-clean-fingerprints-antidetect"
+            class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-emerald-950 text-sm"
+          >
+            <span>Открыть базу знаний</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
+
+          <a
+            href="/tools/metadata-cleaner"
+            class="inline-flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-medium px-5 py-2.5 rounded-lg transition-colors text-sm"
+          >
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span>Очистка метаданных (EXIF)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Grid -->
+  <section class="py-16 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-100">
+            Направления документации
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            Ключевые технические векторы для обеспечения проходимости и точного трекинга
+          </p>
+        </div>
+        <span class="text-xs font-mono text-slate-500 bg-slate-900 border border-slate-800 px-2 py-1 rounded">
+          {allDocs.length} документа
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {categories.map((cat) => (
+          <a
+            href={cat.link}
+            class="group relative rounded-xl border border-slate-800 bg-slate-900/60 p-6 transition-all duration-200 hover:border-slate-700 hover:bg-slate-900 hover:shadow-xl hover:shadow-slate-950 flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class:list={["w-10 h-10 rounded-lg flex items-center justify-center border bg-gradient-to-br", cat.color]}>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={cat.icon} />
+                  </svg>
+                </div>
+                <span class="text-xs font-mono text-slate-500 group-hover:text-slate-300 transition-colors">
+                  {cat.count} {cat.count === 1 ? 'статья' : 'статьи'}
+                </span>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-100 group-hover:text-emerald-400 transition-colors mb-2">
+                {cat.title}
+              </h3>
+
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                {cat.description}
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
+              <span>Изучить руководства</span>
+              <svg class="w-3.5 h-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Tools Highlight -->
+  <section class="py-12 bg-slate-900/40 border-y border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-emerald-900/40 bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/30 p-8 sm:p-10 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative">
+          <div class="lg:col-span-8">
+            <div class="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-full mb-4">
+              <span>100% Client-Side Инструмент</span>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-100 mb-3">
+              Metadata Cleaner (Очистка EXIF/IPTC/XMP)
+            </h3>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+              Удаляйте скрытые следы съемки, серийные номера устройств, GPS-координаты и метаданные камер из креативов перед загрузкой в рекламные сети. Все операции происходят локально через HTML5 Canvas — файлы никуда не загружаются.
+            </p>
+          </div>
+
+          <div class="lg:col-span-4 flex justify-start lg:justify-end">
+            <a
+              href="/tools/metadata-cleaner"
+              class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-3 rounded-lg transition-all shadow-lg shadow-emerald-950 text-sm"
+            >
+              <span>Запустить Metadata Cleaner</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Articles -->
+  <section class="py-16 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-100">
+          Свежие технические публикации
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">
+          Последние обновленные мануалы и архитектурные схемы
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        {recentDocs.map((doc) => (
+          <a
+            href={`/docs/${doc.slug}`}
+            class="block rounded-xl border border-slate-800/80 bg-slate-900/40 p-5 hover:border-slate-700 hover:bg-slate-900/80 transition-all group"
+          >
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    {doc.data.category}
+                  </span>
+                  <span class="text-xs text-slate-500 font-mono">
+                    {doc.data.pubDate}
+                  </span>
+                </div>
+                <h3 class="text-base sm:text-lg font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors">
+                  {doc.data.title}
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1 line-clamp-2">
+                  {doc.data.description}
+                </p>
+              </div>
+
+              <div class="shrink-0 self-end sm:self-center">
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 group-hover:translate-x-1 transition-transform">
+                  <span>Читать</span>
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

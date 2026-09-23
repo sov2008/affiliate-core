@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "setting-up-clean-fingerprints-antidetect",
+    "title": "Configuring Anti-Detect Profiles Without Canvas and WebRTC Leaks",
+    "category": "infrastructure",
+    "tags": ["antidetect", "fingerprints", "proxies"],
+    "status": "pending"
+  },
+  {
+    "slug": "meta-pixel-s2s-postback-guide",
+    "title": "Server-Side S2S Postback Integration for Meta Conversions API",
+    "category": "tracking",
+    "tags": ["tracking", "postback", "facebook"],
+    "status": "pending"
+  },
+  {
+    "slug": "how-to-warm-up-ad-accounts-safely",
+    "title": "Safe Account Farming and Spending Warm-Up Schedules for Tier-1 Ads",
+    "category": "troubleshooting",
+    "tags": ["warm-up", "bans", "media-buying"],
+    "status": "pending"
+  }
+]

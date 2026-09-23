@@ -1,0 +1,37 @@
+name: AdOps Content Bot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate MDX Article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/generate-article.mjs
+
+      - name: Commit and Push Generated Content
+        run: |
+          git config --global user.name "AdOps Content Bot"
+          git config --global user.email "bot@adops-handbook.local"
+          git add src/content/docs/ topics.json
+          if git diff --staged --quiet; then
+            echo "No changes detected to commit."
+          else
+            git commit -m "docs(content): generate article from content queue [skip ci]"
+            git push
+          fi

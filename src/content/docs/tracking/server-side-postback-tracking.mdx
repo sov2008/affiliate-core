@@ -1,0 +1,51 @@
+---
+title: "Configuring S2S Server-Side Postbacks & Conversion Attribution"
+description: "Production guide to implementing reliable server-to-server postbacks, click_id propagation, and conversion deduplication."
+category: "tracking"
+pubDate: "2026-09-23"
+tags: ["tracking", "postback", "s2s", "attribution"]
+author: "AdOps Technical Team"
+---
+
+## Overview
+
+Server-to-server (S2S) postbacks represent the gold standard for conversion attribution in high-volume affiliate networks and media buying platforms. By decoupling conversion firing from client-side cookies and browser sandboxes, S2S tracking bypasses Safari ITP, Firefox ETP, and ad blockers, guaranteeing 99.9% tracking fidelity.
+
+---
+
+## Core Architecture
+
+```
+[User Click] ➔ [Tracker / Redir] ➔ (Assigns click_id) ➔ [Affiliate Offer]
+                                                               │
+                                                       (User Converts)
+                                                               │
+                                                               ▼
+[Tracker Callback]  [Secure HTTPS S2S Postback]  [Affiliate Network]
+```
+
+1. **Click Capture**: The entry gate captures incoming traffic, generates a unique 64-bit UUID `click_id`, and persists it in Redis with an expiration TTL.
+2. **SubID Forwarding**: The tracker appends `?sub1={click_id}` to the affiliate target URL.
+3. **Conversion Webhook**: Upon user payout event, the network fires an authenticated GET/POST request back to your tracker webhook.
+
+---
+
+## Common Postback Macro Reference
+
+| Network / Tracker | Macro Token | Description | Sample Output |
+| :--- | :--- | :--- | :--- |
+| **Keitaro** | `{subid}` | Internal conversion identifier | `a1b2c3d4e5f6` |
+| **Voluum** | `{cid}` | Click ID parameter | `v-89471928371` |
+| **Binom** | `{clickid}` | 32-character hexadecimal hash | `9e107d9d372bb` |
+| **Admitad** | `{subid}` | Partner sub-account tag | `cmp_us_dating` |
+
+---
+
+## Verification & Debugging
+
+Always verify test postbacks using terminal curl commands before sending live traffic:
+
+```bash
+curl -X GET "https://track.example.com/postback?click_id=TEST_12345&payout=45.00&currency=USD&status=approved" \
+  -H "User-Agent: AdOps-Postback-Tester/1.0"
+```
